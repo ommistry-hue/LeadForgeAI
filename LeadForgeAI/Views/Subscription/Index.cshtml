@@ -1,0 +1,143 @@
+@using LeadForgeAI.Models
+@{
+    ViewData["Title"] = "Subscription Plans - LeadForge AI";
+    var currentSub = ViewBag.CurrentSubscription as UserSubscription;
+    var plans = ViewBag.Plans as List<SubscriptionPlan>;
+}
+
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4">Choose Your Plan</h1>
+        <p class="lead">Get more leads, grow your business faster</p>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (currentSub != null)
+    {
+        <div class="alert alert-info">
+            <strong>Current Plan:</strong> @currentSub.SubscriptionPlan.Name
+            <span class="float-end">
+                <strong>Leads Used:</strong> @currentSub.LeadsUsedThisMonth / @currentSub.SubscriptionPlan.LeadLimit this month
+            </span>
+        </div>
+    }
+
+    <div class="row justify-content-center">
+        @foreach (var plan in plans ?? new List<SubscriptionPlan>())
+        {
+            var isCurrentPlan = currentSub != null && currentSub.SubscriptionPlanId == plan.Id;
+            var isPro = plan.Name == "Pro";
+            var features = plan.Features.Split(',');
+
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-lg h-100 @(isPro ? "border-primary" : "")">
+                    @if (isPro)
+                    {
+                        <div class="card-header bg-primary text-white text-center">
+                            <small>MOST POPULAR</small>
+                        </div>
+                    }
+                    <div class="card-body d-flex flex-column">
+                        <h3 class="card-title text-center">@plan.Name</h3>
+                        <div class="text-center mb-4">
+                            <h1 class="display-3">
+                                @if (plan.Price == 0)
+                                {
+                                    <span>Free</span>
+                                }
+                                else
+                                {
+                                    <span>$@plan.Price</span>
+                                }
+                            </h1>
+                            <p class="text-muted">per month</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="text-center mb-3">
+                                <strong>@plan.LeadLimit.ToString("N0")</strong> leads/month
+                            </h5>
+                        </div>
+
+                        <hr>
+
+                        <ul class="list-unstyled mb-4">
+                            @foreach (var feature in features)
+                            {
+                                <li class="mb-2">
+                                    <i class="bi bi-check-circle-fill text-success"></i> @feature.Trim()
+                                </li>
+                            }
+                        </ul>
+
+                        <div class="mt-auto">
+                            @if (isCurrentPlan)
+                            {
+                                <button class="btn btn-secondary btn-lg w-100" disabled>
+                                    Current Plan
+                                </button>
+                            }
+                            else if (plan.Price == 0)
+                            {
+                                <button class="btn btn-outline-primary btn-lg w-100" disabled>
+                                    Default Plan
+                                </button>
+                            }
+                            else
+                            {
+                                <form asp-action="CreateCheckoutSession" method="post">
+                                    <input type="hidden" name="planId" value="@plan.Id" />
+                                    <button type="submit" class="btn @(isPro ? "btn-primary" : "btn-outline-primary") btn-lg w-100">
+                                        @if (currentSub != null && currentSub.SubscriptionPlan.Price < plan.Price)
+                                        {
+                                            <span>Upgrade Now</span>
+                                        }
+                                        else if (currentSub != null)
+                                        {
+                                            <span>Switch Plan</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Get Started</span>
+                                        }
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h4>🔒 Secure Payment via Stripe</h4>
+                    <p class="mb-0">All plans include email & phone enrichment. Cancel anytime, no questions asked.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 text-center">
+        <a asp-controller="Upload" asp-action="Search" class="btn btn-success btn-lg">
+            <i class="bi bi-search"></i> Start Searching for Leads
+        </a>
+    </div>
+</div>

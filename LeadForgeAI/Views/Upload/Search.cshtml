@@ -1,0 +1,136 @@
+@{
+    ViewData["Title"] = "Search Leads - LeadForge AI";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">
+                        <i class="bi bi-search"></i> Search for Leads
+                    </h3>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    @if (TempData["Warning"] != null)
+                    {
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            @TempData["Warning"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <div class="alert alert-info">
+                        <strong>💡 How it works:</strong> Enter what you're looking for (e.g., "laptop buyers", "coffee shops") and we'll find businesses with contact details!
+                    </div>
+
+                    <form asp-action="SearchLeads" method="post">
+                        <div class="mb-3">
+                            <label for="query" class="form-label">What are you looking for?</label>
+                            <input type="text" class="form-control form-control-lg" id="query" name="query"
+                                   placeholder="e.g., laptop buyers, coffee shops, real estate agents" required>
+                            <div class="form-text">
+                                Describe the type of business or customer you want to find
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="country" class="form-label">Country</label>
+                                <select class="form-select" id="country" name="country" required>
+                                    <option value="">Select Country</option>
+                                    <option value="United States">United States</option>
+                                    <option value="Canada">Canada</option>
+                                    <option value="United Kingdom">United Kingdom</option>
+                                    <option value="Australia">Australia</option>
+                                    <option value="India">India</option>
+                                    <option value="Germany">Germany</option>
+                                    <option value="France">France</option>
+                                    <option value="Japan">Japan</option>
+                                    <option value="Brazil">Brazil</option>
+                                    <option value="Mexico">Mexico</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="state" class="form-label">State/Region</label>
+                                <input type="text" class="form-control" id="state" name="state"
+                                       placeholder="e.g., California, Ontario, London" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6>Example Searches:</h6>
+                                    <ul class="mb-0 small">
+                                        <li><strong>"laptop buyers"</strong> in <strong>California</strong>, <strong>United States</strong></li>
+                                        <li><strong>"coffee shops"</strong> in <strong>Toronto</strong>, <strong>Canada</strong></li>
+                                        <li><strong>"real estate agents"</strong> in <strong>London</strong>, <strong>United Kingdom</strong></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-search"></i> Generate Leads
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <div class="card border-0 bg-light">
+                                <div class="card-body">
+                                    <h5>🔍 Step 1</h5>
+                                    <p class="small">Enter your search criteria</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-0 bg-light">
+                                <div class="card-body">
+                                    <h5>🤖 Step 2</h5>
+                                    <p class="small">AI finds & enriches leads</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-0 bg-light">
+                                <div class="card-body">
+                                    <h5>📥 Step 3</h5>
+                                    <p class="small">Download CSV with contacts</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 text-center">
+                <a asp-controller="Leads" asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-list"></i> View Previous Jobs
+                </a>
+                <a asp-controller="Upload" asp-action="Index" class="btn btn-outline-primary">
+                    <i class="bi bi-upload"></i> Upload CSV Instead
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

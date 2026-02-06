@@ -1,0 +1,297 @@
+@{
+    ViewData["Title"] = "Sign Up";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - LeadForgeAI</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/themes.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+</head>
+<body class="theme-dark">
+    <div class="auth-page">
+        <div class="auth-background"></div>
+
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <a href="/" class="auth-logo">
+                        <i class="bi bi-robot"></i>
+                        <span>LeadForge<strong>AI</strong></span>
+                    </a>
+                    <h1 class="auth-title">Create your account</h1>
+                    <p class="auth-subtitle">Start generating high-quality leads today</p>
+                </div>
+
+                @if (ViewData.ModelState.ErrorCount > 0)
+                {
+                    <div class="auth-error">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                        <div>
+                            <strong>Registration failed</strong>
+                            <div>@Html.ValidationSummary(false, "", new { @class = "m-0" })</div>
+                        </div>
+                    </div>
+                }
+
+                <form method="post" class="auth-form" id="registerForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+
+                    <div class="form-group">
+                        <label for="email">Email address</label>
+                        <div class="input-with-icon">
+                            <i class="bi bi-envelope-fill"></i>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                class="form-control"
+                                placeholder="you@example.com"
+                                required
+                                autocomplete="email"
+                            />
+                        </div>
+                        <div class="validation-message" id="emailValidation"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-with-icon">
+                            <i class="bi bi-lock-fill"></i>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                class="form-control"
+                                placeholder="Create a strong password"
+                                required
+                                autocomplete="new-password"
+                            />
+                            <button type="button" class="password-toggle" id="togglePassword">
+                                <i class="bi bi-eye-fill"></i>
+                            </button>
+                        </div>
+                        <div class="validation-message" id="passwordValidation"></div>
+
+                        <div class="password-strength" id="passwordStrength" style="display: none;">
+                            <div class="password-strength-label">
+                                <span>Password strength:</span>
+                                <span id="strengthText">Weak</span>
+                            </div>
+                            <div class="password-strength-bar">
+                                <div class="password-strength-fill" id="strengthFill"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm password</label>
+                        <div class="input-with-icon">
+                            <i class="bi bi-lock-fill"></i>
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                class="form-control"
+                                placeholder="Re-enter your password"
+                                required
+                                autocomplete="new-password"
+                            />
+                            <button type="button" class="password-toggle" id="toggleConfirmPassword">
+                                <i class="bi bi-eye-fill"></i>
+                            </button>
+                        </div>
+                        <div class="validation-message" id="confirmPasswordValidation"></div>
+                    </div>
+
+                    <button type="submit" class="btn-auth" id="submitBtn" disabled>
+                        <i class="bi bi-rocket-takeoff-fill"></i>
+                        <span>Create Account</span>
+                    </button>
+
+                    <p style="font-size: 0.875rem; color: var(--text-tertiary); text-align: center; margin: 0;">
+                        By creating an account, you agree to our Terms of Service and Privacy Policy
+                    </p>
+                </form>
+
+                <div class="auth-footer">
+                    Already have an account? <a href="@Url.Action("Login", "Auth")">Sign in</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/theme-switcher.js" asp-append-version="true"></script>
+    <script>
+        // Form elements
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const emailValidation = document.getElementById('emailValidation');
+        const passwordValidation = document.getElementById('passwordValidation');
+        const confirmPasswordValidation = document.getElementById('confirmPasswordValidation');
+        const passwordStrength = document.getElementById('passwordStrength');
+        const strengthFill = document.getElementById('strengthFill');
+        const strengthText = document.getElementById('strengthText');
+        const togglePassword = document.getElementById('togglePassword');
+        const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+        const submitBtn = document.getElementById('submitBtn');
+        const registerForm = document.getElementById('registerForm');
+
+        let validations = {
+            email: false,
+            password: false,
+            confirmPassword: false
+        };
+
+        // Email validation
+        emailInput.addEventListener('input', function() {
+            const email = this.value.trim();
+            if (email.length === 0) {
+                emailValidation.innerHTML = '';
+                validations.email = false;
+                updateSubmitButton();
+                return;
+            }
+
+            const emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+            if (!emailRegex.test(email)) {
+                emailValidation.innerHTML = '<i class="bi bi-exclamation-circle-fill"></i> Please enter a valid email address';
+                emailValidation.className = 'validation-message error';
+                validations.email = false;
+            } else {
+                emailValidation.innerHTML = '<i class="bi bi-check-circle-fill"></i> Valid email';
+                emailValidation.className = 'validation-message success';
+                validations.email = true;
+            }
+            updateSubmitButton();
+        });
+
+        // Password validation with strength meter
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+
+            if (password.length === 0) {
+                passwordValidation.innerHTML = '';
+                passwordStrength.style.display = 'none';
+                validations.password = false;
+                updateSubmitButton();
+                return;
+            }
+
+            passwordStrength.style.display = 'block';
+
+            // Calculate strength
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (password.length >= 12) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+            // Update strength meter
+            strengthFill.className = 'password-strength-fill';
+            if (strength <= 2) {
+                strengthFill.classList.add('weak');
+                strengthText.textContent = 'Weak';
+                strengthText.style.color = 'var(--danger)';
+            } else if (strength <= 3) {
+                strengthFill.classList.add('medium');
+                strengthText.textContent = 'Medium';
+                strengthText.style.color = 'var(--warning)';
+            } else {
+                strengthFill.classList.add('strong');
+                strengthText.textContent = 'Strong';
+                strengthText.style.color = 'var(--success)';
+            }
+
+            // Validation messages
+            if (password.length < 6) {
+                passwordValidation.innerHTML = '<i class="bi bi-exclamation-circle-fill"></i> Password must be at least 6 characters';
+                passwordValidation.className = 'validation-message error';
+                validations.password = false;
+            } else if (password.length < 8) {
+                passwordValidation.innerHTML = '<i class="bi bi-info-circle-fill"></i> Consider using 8+ characters for better security';
+                passwordValidation.className = 'validation-message warning';
+                validations.password = true;
+            } else {
+                passwordValidation.innerHTML = '<i class="bi bi-check-circle-fill"></i> Password meets requirements';
+                passwordValidation.className = 'validation-message success';
+                validations.password = true;
+            }
+
+            // Re-validate confirm password if it has a value
+            if (confirmPasswordInput.value.length > 0) {
+                confirmPasswordInput.dispatchEvent(new Event('input'));
+            }
+
+            updateSubmitButton();
+        });
+
+        // Confirm password validation
+        confirmPasswordInput.addEventListener('input', function() {
+            const password = passwordInput.value;
+            const confirmPassword = this.value;
+
+            if (confirmPassword.length === 0) {
+                confirmPasswordValidation.innerHTML = '';
+                validations.confirmPassword = false;
+                updateSubmitButton();
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                confirmPasswordValidation.innerHTML = '<i class="bi bi-exclamation-circle-fill"></i> Passwords do not match';
+                confirmPasswordValidation.className = 'validation-message error';
+                validations.confirmPassword = false;
+            } else {
+                confirmPasswordValidation.innerHTML = '<i class="bi bi-check-circle-fill"></i> Passwords match';
+                confirmPasswordValidation.className = 'validation-message success';
+                validations.confirmPassword = true;
+            }
+            updateSubmitButton();
+        });
+
+        // Toggle password visibility
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.type === 'password' ? 'text' : 'password';
+            passwordInput.type = type;
+            const icon = this.querySelector('i');
+            icon.className = type === 'password' ? 'bi bi-eye-fill' : 'bi bi-eye-slash-fill';
+        });
+
+        toggleConfirmPassword.addEventListener('click', function() {
+            const type = confirmPasswordInput.type === 'password' ? 'text' : 'password';
+            confirmPasswordInput.type = type;
+            const icon = this.querySelector('i');
+            icon.className = type === 'password' ? 'bi bi-eye-fill' : 'bi bi-eye-slash-fill';
+        });
+
+        // Update submit button state
+        function updateSubmitButton() {
+            const allValid = validations.email && validations.password && validations.confirmPassword;
+            submitBtn.disabled = !allValid;
+        }
+
+        // Form submission
+        registerForm.addEventListener('submit', function(e) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="spinner"></div><span>Creating account...</span>';
+        });
+
+        // Focus first input
+        emailInput.focus();
+    </script>
+</body>
+</html>

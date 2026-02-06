@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - LeadForgeAI</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/themes.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true" />
+</head>
+<body class="landing-page">
+    <!-- Navigation -->
+    <nav class="landing-nav">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a class="brand" href="/">
+                    <i class="bi bi-robot"></i>
+                    <span>LeadForge<strong>AI</strong></span>
+                </a>
+                <div class="nav-links">
+                    <a href="#features">Features</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="#" class="nav-link-login" data-bs-toggle="modal" data-bs-target="#loginModal">Sign In</a>
+                    <a href="#" class="btn-nav" data-bs-toggle="modal" data-bs-target="#registerModal">Get Started</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="footer-brand">
+                        <i class="bi bi-robot"></i>
+                        <span>LeadForge<strong>AI</strong></span>
+                    </div>
+                    <p>AI-powered lead generation for modern businesses. Find your next customer in seconds.</p>
+                </div>
+                <div class="col-lg-2">
+                    <h5>Product</h5>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="/Identity/Account/Register">Get Started</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h5>Company</h5>
+                    <ul>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h5>Legal</h5>
+                    <ul>
+                        <li><a href="#">Privacy</a></li>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Security</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h5>Connect</h5>
+                    <div class="social-links">
+                        <a href="#"><i class="bi bi-twitter"></i></a>
+                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                        <a href="#"><i class="bi bi-github"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 LeadForgeAI. All rights reserved. Built with AI.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Live Chat Widget -->
+    <!-- TO ENABLE: Sign up at tawk.to and replace the placeholder below with your widget code -->
+    <div id="chat-widget" class="chat-widget">
+        <button class="chat-button" onclick="toggleChat()">
+            <i class="bi bi-chat-dots-fill"></i>
+            <span class="chat-badge">1</span>
+        </button>
+        <div class="chat-window" id="chatWindow" style="display: none;">
+            <div class="chat-header">
+                <div>
+                    <strong>LeadForgeAI Support</strong>
+                    <small>We typically reply in minutes</small>
+                </div>
+                <button class="chat-close" onclick="toggleChat()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="chat-body">
+                <div class="chat-message bot">
+                    <div class="message-avatar">
+                        <i class="bi bi-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <p>👋 Hi there! Have questions about LeadForgeAI?</p>
+                        <p>I'm here to help! You can:</p>
+                        <ul>
+                            <li>📧 Email us: support@leadforgeai.com</li>
+                            <li>💬 Start a free trial to chat with our team</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-footer">
+                <a href="/Identity/Account/Register" class="btn btn-primary w-100">
+                    <i class="bi bi-rocket-takeoff-fill"></i> Start Free Trial
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleChat() {
+            const chatWindow = document.getElementById('chatWindow');
+            const chatButton = document.querySelector('.chat-button');
+            const badge = document.querySelector('.chat-badge');
+
+            if (chatWindow.style.display === 'none') {
+                chatWindow.style.display = 'block';
+                chatButton.classList.add('active');
+                badge.style.display = 'none';
+            } else {
+                chatWindow.style.display = 'none';
+                chatButton.classList.remove('active');
+            }
+        }
+
+        // Auto-show chat widget after 5 seconds on first visit
+        setTimeout(function() {
+            if (!sessionStorage.getItem('chatShown')) {
+                // Don't auto-show for now, just pulse the button
+                document.querySelector('.chat-button').classList.add('pulse');
+                sessionStorage.setItem('chatShown', 'true');
+            }
+        }, 5000);
+    </script>
+
+    <!-- Authentication Modals -->
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content auth-modal">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">
+                        <i class="bi bi-box-arrow-in-right"></i> Sign In to LeadForgeAI
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="modalLoginForm" action="/Auth/Login" method="post">
+                        <div class="mb-3">
+                            <label for="loginEmail" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                                <input type="email" class="form-control" id="loginEmail" name="email" placeholder="you@example.com" required>
+                            </div>
+                            <div id="loginEmailValidation" class="validation-message"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                <input type="password" class="form-control" id="loginPassword" name="password" placeholder="Enter your password" required>
+                                <button class="btn btn-outline-secondary" type="button" id="modalTogglePassword">
+                                    <i class="bi bi-eye-fill"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="loginRememberMe" name="rememberMe">
+                                <label class="form-check-label" for="loginRememberMe">Remember me</label>
+                            </div>
+                            <a href="#" class="text-primary" onclick="switchToForgotPassword(event)">Forgot password?</a>
+                        </div>
+                        <div id="loginError" class="alert alert-danger d-none"></div>
+                        <button type="submit" class="btn btn-primary w-100 btn-lg" id="modalLoginBtn">
+                            <i class="bi bi-box-arrow-in-right"></i> Sign In
+                        </button>
+                    </form>
+                    <div class="text-center mt-4">
+                        <p class="text-muted mb-0">
+                            Don't have an account? <a href="#" class="text-primary" onclick="switchToRegister(event)">Sign up</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content auth-modal">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">
+                        <i class="bi bi-person-plus-fill"></i> Create Your Account
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="modalRegisterForm" action="/Auth/Register" method="post">
+                        <div class="mb-3">
+                            <label for="registerName" class="form-label">Full Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                                <input type="text" class="form-control" id="registerName" name="name" placeholder="John Doe" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerEmail" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                                <input type="email" class="form-control" id="registerEmail" name="email" placeholder="you@example.com" required>
+                            </div>
+                            <div id="registerEmailValidation" class="validation-message"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerPassword" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                <input type="password" class="form-control" id="registerPassword" name="password" placeholder="Create a strong password" required>
+                                <button class="btn btn-outline-secondary" type="button" id="modalToggleRegisterPassword">
+                                    <i class="bi bi-eye-fill"></i>
+                                </button>
+                            </div>
+                            <div id="registerPasswordValidation" class="validation-message"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerConfirmPassword" class="form-label">Confirm Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                <input type="password" class="form-control" id="registerConfirmPassword" name="confirmPassword" placeholder="Re-enter password" required>
+                            </div>
+                            <div id="registerConfirmValidation" class="validation-message"></div>
+                        </div>
+                        <div id="registerError" class="alert alert-danger d-none"></div>
+                        <button type="submit" class="btn btn-primary w-100 btn-lg" id="modalRegisterBtn">
+                            <i class="bi bi-rocket-takeoff-fill"></i> Create Account
+                        </button>
+                    </form>
+                    <div class="text-center mt-4">
+                        <p class="text-muted mb-0">
+                            Already have an account? <a href="#" class="text-primary" onclick="switchToLogin(event)">Sign in</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content auth-modal">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">
+                        <i class="bi bi-key-fill"></i> Reset Your Password
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-4">Enter your email address and we'll send you a link to reset your password.</p>
+                    <form id="modalForgotPasswordForm" action="/Auth/ForgotPassword" method="post">
+                        <div class="mb-3">
+                            <label for="forgotEmail" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                                <input type="email" class="form-control" id="forgotEmail" name="email" placeholder="you@example.com" required>
+                            </div>
+                            <div id="forgotEmailValidation" class="validation-message"></div>
+                        </div>
+                        <div id="forgotError" class="alert alert-danger d-none"></div>
+                        <div id="forgotSuccess" class="alert alert-success d-none"></div>
+                        <button type="submit" class="btn btn-primary w-100 btn-lg" id="modalForgotBtn">
+                            <i class="bi bi-send-fill"></i> Send Reset Link
+                        </button>
+                    </form>
+                    <div class="text-center mt-4">
+                        <p class="text-muted mb-0">
+                            Remember your password? <a href="#" class="text-primary" onclick="switchToLogin(event)">Sign in</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/theme-switcher.js" asp-append-version="true"></script>
+
+    <script>
+        // Scroll reveal animations
+        function revealOnScroll() {
+            const reveals = document.querySelectorAll('.scroll-reveal');
+            reveals.forEach(element => {
+                const windowHeight = window.innerHeight;
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+
+                if (elementTop < windowHeight - elementVisible) {
+                    element.classList.add('revealed');
+                }
+            });
+        }
+
+        // Run on page load and scroll
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', revealOnScroll);
+        } else {
+            revealOnScroll();
+        }
+
+        // Throttle scroll events for better performance
+        let scrollTimeout;
+        window.addEventListener('scroll', function() {
+            if (scrollTimeout) {
+                window.cancelAnimationFrame(scrollTimeout);
+            }
+            scrollTimeout = window.requestAnimationFrame(revealOnScroll);
+        }, { passive: true });
+    </script>
+
+    <script>
+        // Modal switching functions
+        function switchToLogin(e) {
+            e.preventDefault();
+            bootstrap.Modal.getInstance(document.getElementById('registerModal'))?.hide();
+            bootstrap.Modal.getInstance(document.getElementById('forgotPasswordModal'))?.hide();
+            new bootstrap.Modal(document.getElementById('loginModal')).show();
+        }
+
+        function switchToRegister(e) {
+            e.preventDefault();
+            bootstrap.Modal.getInstance(document.getElementById('loginModal'))?.hide();
+            bootstrap.Modal.getInstance(document.getElementById('forgotPasswordModal'))?.hide();
+            new bootstrap.Modal(document.getElementById('registerModal')).show();
+        }
+
+        function switchToForgotPassword(e) {
+            e.preventDefault();
+            bootstrap.Modal.getInstance(document.getElementById('loginModal'))?.hide();
+            bootstrap.Modal.getInstance(document.getElementById('registerModal'))?.hide();
+            new bootstrap.Modal(document.getElementById('forgotPasswordModal')).show();
+        }
+
+        // Password toggle for modals
+        document.getElementById('modalTogglePassword')?.addEventListener('click', function() {
+            const passwordInput = document.getElementById('loginPassword');
+            const icon = this.querySelector('i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.replace('bi-eye-fill', 'bi-eye-slash-fill');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.replace('bi-eye-slash-fill', 'bi-eye-fill');
+            }
+        });
+
+        document.getElementById('modalToggleRegisterPassword')?.addEventListener('click', function() {
+            const passwordInput = document.getElementById('registerPassword');
+            const icon = this.querySelector('i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.replace('bi-eye-fill', 'bi-eye-slash-fill');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.replace('bi-eye-slash-fill', 'bi-eye-fill');
+            }
+        });
+
+        // Debounce function to prevent excessive validation calls
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Email validation for modals
+        const validateLoginEmail = debounce(function() {
+            const emailInput = document.getElementById('loginEmail');
+            const validation = document.getElementById('loginEmailValidation');
+            if (!emailInput || !validation) return;
+
+            const email = emailInput.value.trim();
+            if (email.length === 0) {
+                validation.innerHTML = '';
+                return;
+            }
+            const emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+            if (!emailRegex.test(email)) {
+                validation.innerHTML = '<i class="bi bi-exclamation-circle-fill"></i> Please enter a valid email address';
+                validation.className = 'validation-message error';
+            } else {
+                validation.innerHTML = '<i class="bi bi-check-circle-fill"></i> Valid email';
+                validation.className = 'validation-message success';
+            }
+        }, 300);
+
+        document.getElementById('loginEmail')?.addEventListener('input', validateLoginEmail);
+
+        const validateRegisterEmail = debounce(function() {
+            const emailInput = document.getElementById('registerEmail');
+            const validation = document.getElementById('registerEmailValidation');
+            if (!emailInput || !validation) return;
+
+            const email = emailInput.value.trim();
+            if (email.length === 0) {
+                validation.innerHTML = '';
+                return;
+            }
+            const emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+            if (!emailRegex.test(email)) {
+                validation.innerHTML = '<i class="bi bi-exclamation-circle-fill"></i> Please enter a valid email address';
+                validation.className = 'validation-message error';
+            } else {
+                validation.innerHTML = '<i class="bi bi-check-circle-fill"></i> Valid email';
+                validation.className = 'validation-message success';
+            }
+        }, 300);
+
+        document.getElementById('registerEmail')?.addEventListener('input', validateRegisterEmail);
+
+        // Password strength for register modal
+        const validateRegisterPassword = debounce(function() {
+            const passwordInput = document.getElementById('registerPassword');
+            const validation = document.getElementById('registerPasswordValidation');
+            if (!passwordInput || !validation) return;
+
+            const password = passwordInput.value;
+            if (password.length === 0) {
+                validation.innerHTML = '';
+                return;
+            }
+            if (password.length < 8) {
+                validation.innerHTML = '<i class="bi bi-exclamation-circle-fill"></i> Password must be at least 8 characters';
+                validation.className = 'validation-message error';
+            } else if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+                validation.innerHTML = '<i class="bi bi-info-circle-fill"></i> Include uppercase, lowercase, and numbers';
+                validation.className = 'validation-message warning';
+            } else {
+                validation.innerHTML = '<i class="bi bi-check-circle-fill"></i> Strong password';
+                validation.className = 'validation-message success';
+            }
+        }, 300);
+
+        document.getElementById('registerPassword')?.addEventListener('input', validateRegisterPassword);
+
+        // Confirm password validation
+        const validateConfirmPassword = debounce(function() {
+            const passwordInput = document.getElementById('registerPassword');
+            const confirmInput = document.getElementById('registerConfirmPassword');
+            const validation = document.getElementById('registerConfirmValidation');
+            if (!passwordInput || !confirmInput || !validation) return;
+
+            const password = passwordInput.value;
+            const confirm = confirmInput.value;
+            if (confirm.length === 0) {
+                validation.innerHTML = '';
+                return;
+            }
+            if (password !== confirm) {
+                validation.innerHTML = '<i class="bi bi-exclamation-circle-fill"></i> Passwords do not match';
+                validation.className = 'validation-message error';
+            } else {
+                validation.innerHTML = '<i class="bi bi-check-circle-fill"></i> Passwords match';
+                validation.className = 'validation-message success';
+            }
+        }, 300);
+
+        document.getElementById('registerConfirmPassword')?.addEventListener('input', validateConfirmPassword);
+
+        // Form submission handlers
+        document.getElementById('modalLoginForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('modalLoginBtn');
+            const error = document.getElementById('loginError');
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Signing in...';
+            error.classList.add('d-none');
+
+            fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this),
+                credentials: 'same-origin',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = data.redirectUrl || '/';
+                } else {
+                    error.textContent = data.message || 'Invalid email or password';
+                    error.classList.remove('d-none');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> Sign In';
+                }
+            })
+            .catch(() => {
+                error.textContent = 'An error occurred. Please try again.';
+                error.classList.remove('d-none');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> Sign In';
+            });
+        });
+
+        document.getElementById('modalRegisterForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('modalRegisterBtn');
+            const error = document.getElementById('registerError');
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Creating account...';
+            error.classList.add('d-none');
+
+            fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this),
+                credentials: 'same-origin',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = data.redirectUrl || '/';
+                } else {
+                    error.textContent = data.message || 'Registration failed. Please try again.';
+                    error.classList.remove('d-none');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-rocket-takeoff-fill"></i> Create Account';
+                }
+            })
+            .catch(() => {
+                error.textContent = 'An error occurred. Please try again.';
+                error.classList.remove('d-none');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-rocket-takeoff-fill"></i> Create Account';
+            });
+        });
+
+        document.getElementById('modalForgotPasswordForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('modalForgotBtn');
+            const error = document.getElementById('forgotError');
+            const success = document.getElementById('forgotSuccess');
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Sending...';
+            error.classList.add('d-none');
+            success.classList.add('d-none');
+
+            fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this),
+                credentials: 'same-origin',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    success.textContent = 'Password reset link sent! Check your email.';
+                    success.classList.remove('d-none');
+                    this.reset();
+                } else {
+                    error.textContent = data.message || 'Failed to send reset link.';
+                    error.classList.remove('d-none');
+                }
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-send-fill"></i> Send Reset Link';
+            })
+            .catch(() => {
+                error.textContent = 'An error occurred. Please try again.';
+                error.classList.remove('d-none');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-send-fill"></i> Send Reset Link';
+            });
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

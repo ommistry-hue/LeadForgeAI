@@ -1,0 +1,655 @@
+@{
+    ViewData["Title"] = "LeadForgeAI - AI-Powered Lead Generation";
+    Layout = User.Identity?.IsAuthenticated == true ? "~/Views/Shared/_Layout.cshtml" : "~/Views/Shared/_LandingLayout.cshtml";
+}
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <!-- AUTHENTICATED DASHBOARD -->
+    <div class="dashboard-wrapper">
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon bg-gradient-primary">
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>@ViewBag.Credits <span style="font-size: 1rem; color: rgba(255,255,255,0.6);">/ @ViewBag.PlanLimit</span></h3>
+                        <p>Leads Available <span class="badge bg-primary ms-2">@ViewBag.PlanName Plan</span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon bg-gradient-success">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>@ViewBag.TotalProcessed</h3>
+                        <p>Total Generated</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon bg-gradient-info">
+                        <i class="bi bi-briefcase-fill"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>@(ViewBag.RecentJobs?.Count ?? 0)</h3>
+                        <p>Recent Searches</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-8">
+                <div class="action-card">
+                    <h2 class="mb-4">
+                        <i class="bi bi-rocket-takeoff-fill text-primary"></i> Quick Actions
+                    </h2>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <a href="@Url.Action("Search", "Upload")" class="action-btn primary">
+                                <i class="bi bi-search"></i>
+                                <div>
+                                    <h5>Search for Leads</h5>
+                                    <p>Find businesses by query & location</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="@Url.Action("Index", "Upload")" class="action-btn secondary">
+                                <i class="bi bi-cloud-upload-fill"></i>
+                                <div>
+                                    <h5>Upload CSV</h5>
+                                    <p>Enrich your existing domains</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="@Url.Action("Index", "Leads")" class="action-btn info">
+                                <i class="bi bi-folder2-open"></i>
+                                <div>
+                                    <h5>My Searches</h5>
+                                    <p>View & download past results</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="@Url.Action("Index", "Subscription")" class="action-btn warning">
+                                <i class="bi bi-star-fill"></i>
+                                <div>
+                                    <h5>Upgrade Plan</h5>
+                                    <p>Get more leads & features</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="action-card how-it-works">
+                    <h5 class="mb-4"><i class="bi bi-lightbulb-fill text-warning"></i> How It Works</h5>
+                    <div class="steps">
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            <div>
+                                <strong>Search or Upload</strong>
+                                <p>Enter query or upload domains</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            <div>
+                                <strong>AI Enriches</strong>
+                                <p>We find emails, phones & more</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            <div>
+                                <strong>Export CSV</strong>
+                                <p>Download your enriched leads</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Jobs -->
+        @if (ViewBag.RecentJobs != null && ViewBag.RecentJobs.Count > 0)
+        {
+            <div class="action-card">
+                <h5 class="mb-4"><i class="bi bi-clock-history"></i> Recent Searches</h5>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Search/File</th>
+                                <th>Status</th>
+                                <th>Leads</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var job in ViewBag.RecentJobs)
+                            {
+                                <tr>
+                                    <td>@job.FileName</td>
+                                    <td>
+                                        <span class="badge bg-@(job.Status == "Completed" ? "success" : "warning")">
+                                            @job.Status
+                                        </span>
+                                    </td>
+                                    <td>@job.ProcessedLeads</td>
+                                    <td>@job.CreatedAt.ToString("MMM dd")</td>
+                                    <td>
+                                        <a href="@Url.Action("ViewJob", "Leads", new { id = job.Id })" class="btn btn-sm btn-primary">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <!-- PUBLIC LANDING PAGE -->
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-gradient"></div>
+        <div class="container">
+            <div class="row align-items-center min-vh-100">
+                <div class="col-lg-6">
+                    <div class="hero-badge animate-fade-in">
+                        <i class="bi bi-stars"></i> AI-Powered Lead Generation Platform
+                    </div>
+                    <h1 class="hero-title animate-slide-up">
+                        Stop Chasing Leads.
+                        <span class="gradient-text">Start Converting Them.</span>
+                    </h1>
+                    <p class="hero-subtitle animate-slide-up delay-1">
+                        Turn hours of manual prospecting into seconds with AI-powered lead generation. Get verified emails, direct phone numbers, and complete company intelligence — instantly.
+                    </p>
+                    <div class="hero-cta">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" class="btn-hero primary">
+                            <i class="bi bi-rocket-takeoff-fill"></i> Start Free Trial
+                        </a>
+                        <a href="#features" class="btn-hero secondary">
+                            <i class="bi bi-play-circle-fill"></i> See How It Works
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <strong>10,000+</strong>
+                            <span>Leads Generated</span>
+                        </div>
+                        <div class="stat-item">
+                            <strong>95%</strong>
+                            <span>Accuracy Rate</span>
+                        </div>
+                        <div class="stat-item">
+                            <strong>50+</strong>
+                            <span>Countries</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-visual">
+                        <div class="visual-card card-1 animate-float">
+                            <div class="card-glow"></div>
+                            <i class="bi bi-search"></i>
+                            <span>AI-Powered Search</span>
+                            <small>Natural language queries</small>
+                        </div>
+                        <div class="visual-card card-2 animate-float delay-2">
+                            <div class="card-glow"></div>
+                            <i class="bi bi-robot"></i>
+                            <span>Smart Enrichment</span>
+                            <small>95%+ accuracy rate</small>
+                        </div>
+                        <div class="visual-card card-3 animate-float delay-3">
+                            <div class="card-glow"></div>
+                            <i class="bi bi-database-fill-check"></i>
+                            <span>Instant Export</span>
+                            <small>CSV ready for CRM</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Customer Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Trusted By Teams</span>
+                <h2>See What Our Customers Say</h2>
+                <p>Join hundreds of businesses generating quality leads every day</p>
+            </div>
+
+            <div class="row g-4 mb-5">
+                <div class="col-lg-4">
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                        <p class="testimonial-quote">
+                            "LeadForgeAI helped us generate 500+ qualified leads in our first month. The email accuracy is incredible - over 90% deliverability rate."
+                        </p>
+                        <div class="testimonial-author">
+                            <img src="/images/testimonials/avatar-1.jpg" alt="Sarah Chen" class="author-photo" onerror="this.src='https://ui-avatars.com/api/?name=Sarah+Chen&background=6366f1&color=fff&size=80'">
+                            <div class="author-info">
+                                <strong>Sarah Chen</strong>
+                                <span>Head of Sales, TechFlow Inc</span>
+                                <div class="testimonial-metric">
+                                    <i class="bi bi-graph-up-arrow"></i> 500+ leads/month
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                        <p class="testimonial-quote">
+                            "As a real estate agent, finding property investors was always time-consuming. Now I get targeted leads in minutes. Game changer!"
+                        </p>
+                        <div class="testimonial-author">
+                            <img src="/images/testimonials/avatar-2.jpg" alt="Marcus Rodriguez" class="author-photo" onerror="this.src='https://ui-avatars.com/api/?name=Marcus+Rodriguez&background=8b5cf6&color=fff&size=80'">
+                            <div class="author-info">
+                                <strong>Marcus Rodriguez</strong>
+                                <span>Real Estate Agent, Prestige Realty</span>
+                                <div class="testimonial-metric">
+                                    <i class="bi bi-clock-fill"></i> 10x faster prospecting
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                        <p class="testimonial-quote">
+                            "We replaced 3 different tools with LeadForgeAI. The ROI was immediate - we closed 2 enterprise deals from leads found here."
+                        </p>
+                        <div class="testimonial-author">
+                            <img src="/images/testimonials/avatar-3.jpg" alt="Emily Watson" class="author-photo" onerror="this.src='https://ui-avatars.com/api/?name=Emily+Watson&background=ec4899&color=fff&size=80'">
+                            <div class="author-info">
+                                <strong>Emily Watson</strong>
+                                <span>Co-Founder, CloudScale SaaS</span>
+                                <div class="testimonial-metric">
+                                    <i class="bi bi-trophy-fill"></i> 2 enterprise deals closed
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Logos -->
+            <div class="customer-logos">
+                <p class="logos-label">Trusted by teams at</p>
+                <div class="logos-grid">
+                    <div class="logo-item">TechFlow</div>
+                    <div class="logo-item">Prestige Realty</div>
+                    <div class="logo-item">CloudScale</div>
+                    <div class="logo-item">GrowthLabs</div>
+                    <div class="logo-item">DataSync</div>
+                    <div class="logo-item">PeakSales</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Features</span>
+                <h2>Everything You Need to Generate Leads</h2>
+                <p>Powered by advanced AI to deliver accurate, actionable lead data</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon bg-gradient-primary">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <h3>Geographic Search</h3>
+                        <p>Find businesses by location, industry, or custom query. Target specific cities, states, or countries.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon bg-gradient-success">
+                            <i class="bi bi-envelope-at-fill"></i>
+                        </div>
+                        <h3>Email Discovery</h3>
+                        <p>AI-powered email finding with pattern matching and domain analysis for high accuracy.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon bg-gradient-info">
+                            <i class="bi bi-telephone-fill"></i>
+                        </div>
+                        <h3>Phone Numbers</h3>
+                        <p>Extract verified phone numbers from multiple sources for direct outreach.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon bg-gradient-warning">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <h3>Company Intelligence</h3>
+                        <p>Get industry, employee count, revenue estimates, and company descriptions.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon bg-gradient-danger">
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                        <h3>Lead Scoring</h3>
+                        <p>Automatic lead quality scoring based on data completeness and relevance.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon bg-gradient-purple">
+                            <i class="bi bi-file-earmark-arrow-down-fill"></i>
+                        </div>
+                        <h3>Instant Export</h3>
+                        <p>Download enriched leads as CSV, ready to import into your CRM or email tools.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases Section -->
+    <section class="use-cases-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Use Cases</span>
+                <h2>Built For Your Industry</h2>
+                <p>See how teams like yours use LeadForgeAI to grow faster</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="use-case-card">
+                        <div class="use-case-icon">
+                            <i class="bi bi-laptop"></i>
+                        </div>
+                        <h3>B2B SaaS Companies</h3>
+                        <p class="use-case-problem">
+                            <i class="bi bi-exclamation-circle-fill text-danger"></i>
+                            <strong>The Problem:</strong> Finding decision-makers at target companies is like finding a needle in a haystack
+                        </p>
+                        <p class="use-case-solution">
+                            <i class="bi bi-check-circle-fill text-success"></i>
+                            <strong>How LeadForgeAI Helps:</strong> Search "VP of Sales at companies using Salesforce in Austin" and get verified email addresses instantly
+                        </p>
+                        <div class="use-case-example">
+                            <strong>Example Search:</strong>
+                            <code>"SaaS companies in Silicon Valley with 50-200 employees"</code>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="use-case-card">
+                        <div class="use-case-icon">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <h3>Real Estate Professionals</h3>
+                        <p class="use-case-problem">
+                            <i class="bi bi-exclamation-circle-fill text-danger"></i>
+                            <strong>The Problem:</strong> Cold calling property owners without accurate contact info wastes hours daily
+                        </p>
+                        <p class="use-case-solution">
+                            <i class="bi bi-check-circle-fill text-success"></i>
+                            <strong>How LeadForgeAI Helps:</strong> Find commercial property owners, real estate investors, or homebuyers with verified phone numbers and emails
+                        </p>
+                        <div class="use-case-example">
+                            <strong>Example Search:</strong>
+                            <code>"Property management companies in Miami"</code>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="use-case-card">
+                        <div class="use-case-icon">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <h3>Recruiters & Agencies</h3>
+                        <p class="use-case-problem">
+                            <i class="bi bi-exclamation-circle-fill text-danger"></i>
+                            <strong>The Problem:</strong> Sourcing qualified candidates outside LinkedIn is nearly impossible
+                        </p>
+                        <p class="use-case-solution">
+                            <i class="bi bi-check-circle-fill text-success"></i>
+                            <strong>How LeadForgeAI Helps:</strong> Find professionals by location, industry, and company to build targeted candidate pools
+                        </p>
+                        <div class="use-case-example">
+                            <strong>Example Search:</strong>
+                            <code>"Software engineers at startups in Seattle"</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Process</span>
+                <h2>How LeadForgeAI Works</h2>
+                <p>From search to export in 3 simple steps</p>
+            </div>
+
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <div class="process-step">
+                        <div class="step-number">01</div>
+                        <i class="bi bi-search step-icon"></i>
+                        <h3>Search or Upload</h3>
+                        <p>Enter your search query like "coffee shops in Seattle" or upload a CSV with company domains. Our AI understands natural language.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="process-step">
+                        <div class="step-number">02</div>
+                        <i class="bi bi-cpu step-icon"></i>
+                        <h3>AI Enriches Data</h3>
+                        <p>Our AI scans multiple sources to find emails, phone numbers, company info, and social profiles. Takes just seconds.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="process-step">
+                        <div class="step-number">03</div>
+                        <i class="bi bi-download step-icon"></i>
+                        <h3>Export & Use</h3>
+                        <p>Download your enriched leads as CSV. Import directly into Salesforce, HubSpot, or your favorite CRM.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Integrations Section -->
+    <section class="integrations-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Integrations</span>
+                <h2>Works With Your Favorite Tools</h2>
+                <p>Export leads directly to your CRM or download as CSV for ultimate flexibility</p>
+            </div>
+
+            <div class="integrations-grid">
+                <div class="integration-card">
+                    <div class="integration-logo">
+                        <i class="bi bi-cloud-fill"></i>
+                    </div>
+                    <h4>Salesforce</h4>
+                    <p>Direct CSV import to campaigns</p>
+                </div>
+                <div class="integration-card">
+                    <div class="integration-logo">
+                        <i class="bi bi-circle-fill"></i>
+                    </div>
+                    <h4>HubSpot</h4>
+                    <p>Import contacts & companies</p>
+                </div>
+                <div class="integration-card">
+                    <div class="integration-logo">
+                        <i class="bi bi-funnel-fill"></i>
+                    </div>
+                    <h4>Pipedrive</h4>
+                    <p>Add leads to your pipeline</p>
+                </div>
+                <div class="integration-card">
+                    <div class="integration-logo">
+                        <i class="bi bi-envelope-fill"></i>
+                    </div>
+                    <h4>Mailchimp</h4>
+                    <p>Build email campaigns fast</p>
+                </div>
+                <div class="integration-card">
+                    <div class="integration-logo">
+                        <i class="bi bi-google"></i>
+                    </div>
+                    <h4>Google Sheets</h4>
+                    <p>Collaborate with your team</p>
+                </div>
+                <div class="integration-card">
+                    <div class="integration-logo">
+                        <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+                    </div>
+                    <h4>Excel / CSV</h4>
+                    <p>Universal data export</p>
+                </div>
+            </div>
+
+            <div class="integration-cta">
+                <p class="text-muted">
+                    <i class="bi bi-plug-fill"></i>
+                    All exports include: Name, Email, Phone, Company, Industry, Location & more
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Preview -->
+    <section class="pricing-section" id="pricing">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Pricing</span>
+                <h2>Simple, Transparent Pricing</h2>
+                <p>Start free, upgrade as you grow</p>
+            </div>
+
+            <div class="row g-4 justify-content-center">
+                <div class="col-lg-4">
+                    <div class="pricing-card">
+                        <div class="plan-name">Free</div>
+                        <div class="plan-price">
+                            <span class="currency">$</span>
+                            <span class="amount">0</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <ul class="plan-features">
+                            <li><i class="bi bi-check-circle-fill"></i> 10 leads per month</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Basic search</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Email & phone enrichment</li>
+                            <li><i class="bi bi-check-circle-fill"></i> CSV export</li>
+                        </ul>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" class="btn-pricing">Get Started</a>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="pricing-card featured">
+                        <div class="popular-badge">Most Popular</div>
+                        <div class="plan-name">Pro</div>
+                        <div class="plan-price">
+                            <span class="currency">$</span>
+                            <span class="amount">29</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <ul class="plan-features">
+                            <li><i class="bi bi-check-circle-fill"></i> 500 leads per month</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Advanced search</li>
+                            <li><i class="bi bi-check-circle-fill"></i> All enrichment features</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Priority support</li>
+                        </ul>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" class="btn-pricing">Start Free Trial</a>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="pricing-card">
+                        <div class="plan-name">Enterprise</div>
+                        <div class="plan-price">
+                            <span class="currency">$</span>
+                            <span class="amount">99</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <ul class="plan-features">
+                            <li><i class="bi bi-check-circle-fill"></i> Unlimited leads</li>
+                            <li><i class="bi bi-check-circle-fill"></i> API access</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Custom integrations</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Dedicated support</li>
+                        </ul>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" class="btn-pricing">Get Started</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-card">
+                <h2>Ready to Generate Quality Leads?</h2>
+                <p>Join thousands of businesses using LeadForgeAI to grow faster</p>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" class="btn-hero primary large">
+                    <i class="bi bi-rocket-takeoff-fill"></i> Start Free Trial
+                </a>
+                <p class="cta-note">No credit card required • 10 free leads • Cancel anytime</p>
+            </div>
+        </div>
+    </section>
+}
