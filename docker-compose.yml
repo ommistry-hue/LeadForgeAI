@@ -1,0 +1,6 @@
+services:
+  leadforgeai:
+    image: ${DOCKER_REGISTRY-}leadforgeai
+    build:
+      context: .
+      dockerfile: LeadForgeAI/Dockerfile
